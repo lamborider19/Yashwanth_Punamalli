@@ -1,3 +1,8 @@
+# speed_zone_limiter_node.py
+# Node that limits robot forward velocity when it enters a predefined slow zone.
+# It listens to /cmd_vel and /amcl_pose, checks whether the robot is inside
+# a polygon zone, and republishes a capped velocity on /cmd_vel_safe.
+
 import rclpy
 from rclpy.node import Node
 
@@ -8,13 +13,21 @@ from shapely.geometry import Point, Polygon
 
 
 class SpeedZoneLimiter(Node):
+    # Main node that monitors robot position and limits velocity
+    # when the robot enters the configured slow zone.
 
     def __init__(self):
         super().__init__('speed_zone_limiter')
 
         # Declare parameters
+        # Load parameters for the slow zone
+        # max_speed defines the maximum allowed forward velocity
+        # polygon defines the coordinates of the slow zone
         self.declare_parameter('max_speed', 0.1)
         self.declare_parameter('polygon', [1.2, 0.5, 3.4, 0.5, 3.4, 2.1, 1.2, 2.1])
+        # ROS2 parameters don't support nested lists (e.g. [[x,y],[x,y]])
+        # so the polygon is stored as a flat list and reconstructed into
+        # coordinate pairs before creating the polygon.
 
         self.max_speed = self.get_parameter('max_speed').value
         poly_list = self.get_parameter('polygon').value
