@@ -92,6 +92,8 @@ ros2 launch speed_zone_limiter speed_zone_limiter.launch.py
 
 This launch file loads the zone configuration and runs the limiter node.
 
+During implementation, the polygon parameter was stored as a flat list because ROS2 parameters do not support nested lists. The list is converted into coordinate pairs inside the node before constructing the polygon.
+
 ---
 
 ## Verifying in Simulation
